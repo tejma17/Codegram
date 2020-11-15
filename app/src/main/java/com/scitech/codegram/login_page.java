@@ -1,11 +1,14 @@
 package com.scitech.codegram;
 
+import android.app.ActivityOptions;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
 
 import android.text.TextUtils;
+import android.util.Pair;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -25,6 +28,8 @@ public class login_page extends AppCompatActivity {
 
     FirebaseAuth firebaseAuth;
     MaterialButton login;
+    ImageView logo;
+    TextView action;
     TextInputLayout email_field, pass_field;
     ProgressDialog progressDialog;
     FirebaseUser user;
@@ -43,12 +48,21 @@ public class login_page extends AppCompatActivity {
         firebaseAuth = FirebaseAuth.getInstance();
         email_field = findViewById(R.id.email);
         pass_field = findViewById(R.id.password);
+        action = findViewById(R.id.action);
+        logo = findViewById(R.id.logo);
 
         register.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                startActivity(new Intent(login_page.this, Signup_page.class));
-                finish();
+                Pair[] pairs = new Pair[6];
+                pairs[0] = new Pair<View, String>(logo, "logo");
+                pairs[1] = new Pair<View, String>(action, "action");
+                pairs[2] = new Pair<View, String>(email_field, "email");
+                pairs[3] = new Pair<View, String>(pass_field, "pass");
+                pairs[4] = new Pair<View, String>(login, "button");
+                pairs[5] = new Pair<View, String>(register, "message");
+                ActivityOptions options = ActivityOptions.makeSceneTransitionAnimation(login_page.this, pairs);
+                startActivity(new Intent(login_page.this, Signup_page.class), options.toBundle());
             }
         });
 
@@ -93,16 +107,16 @@ public class login_page extends AppCompatActivity {
                 @Override
                 public void onComplete(@NonNull Task<AuthResult> task) {
                     if (task.isSuccessful()) {
-                         user = firebaseAuth.getCurrentUser();
+                        user = firebaseAuth.getCurrentUser();
                         Toast.makeText(login_page.this, "Login Successful !!!", Toast.LENGTH_SHORT).show();
-                        progressDialog.hide();
                         startActivity(new Intent(login_page.this, profile_view.class));
+                        finish();
                     }
                     else {
                         Exception e = task.getException();
                         Toast.makeText(login_page.this, "Login Failed !!! " + e.getMessage(), Toast.LENGTH_SHORT).show();
-                        progressDialog.hide();
                     }
+                    progressDialog.cancel();
                 }
             });
         }

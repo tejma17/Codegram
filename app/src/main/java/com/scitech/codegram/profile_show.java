@@ -93,7 +93,7 @@ public class profile_show extends Fragment {
 
 
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-        DatabaseReference userDatabase = FirebaseDatabase.getInstance().getReference("CodeStalk_users/"+ user.getUid());
+        DatabaseReference userDatabase = FirebaseDatabase.getInstance().getReference("Codegram_Users/"+ user.getUid());
 
         userDatabase.addValueEventListener(new ValueEventListener() {
             @Override

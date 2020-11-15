@@ -2,17 +2,17 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.scitech.codegram">
 
-    <uses-permission android:name="android.permission.INTERNET"/>
+    <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.GET_ACCOUNTS" />
     <uses-permission android:name="android.permission.READ_PROFILE" />
     <uses-permission android:name="android.permission.READ_CONTACTS" />
 
     <supports-screens
-        android:resizeable="true"
-        android:smallScreens="true"
+        android:anyDensity="true"
         android:largeScreens="true"
         android:normalScreens="true"
-        android:anyDensity="true" />
+        android:resizeable="true"
+        android:smallScreens="true" />
 
     <application
         android:allowBackup="true"
@@ -21,16 +21,18 @@
         android:roundIcon="@mipmap/logo"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".Splash">
+        <activity android:name=".NewBlog"></activity>
+        <activity
+            android:name=".Splash"
+            android:theme="@style/SplashScreenTheme">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".login_page"/>
-        <activity android:name=".Signup_page">
-        </activity>
+        <activity android:name=".login_page" />
+        <activity android:name=".Signup_page"></activity>
         <activity android:name=".edit_profile" />
         <activity
             android:name=".profile_view"

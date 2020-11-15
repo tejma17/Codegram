@@ -32,8 +32,9 @@
                     android:layout_width="30dp"
                     android:layout_height="30dp"
                     android:layout_gravity="end"
-                    android:backgroundTint="@color/black"
-                    android:background="@drawable/ic_baseline_edit_24"
+                    android:contentDescription="Edit Profile"
+                    android:backgroundTint="@color/white"
+                    android:background="@drawable/ic_edit"
                     android:layout_margin="10dp"/>
 
                 <com.mikhaellopez.circularimageview.CircularImageView

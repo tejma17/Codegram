@@ -5,12 +5,14 @@ import android.net.Uri;
 import android.os.Bundle;
 
 import androidx.appcompat.app.ActionBarDrawerToggle;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.FragmentManager;
 
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -62,8 +64,10 @@ public class profile_view extends AppCompatActivity implements NavigationView.On
         headerUsername.setText(user.getDisplayName());
         headerEmail.setText(user.getEmail());
         Uri uri = FirebaseAuth.getInstance().getCurrentUser().getPhotoUrl();
-
-        Glide.with(getApplicationContext()).load(uri.toString()).into(headerImage);
+        if(uri != null) {
+            Log.i("TAG", uri.toString());
+            Glide.with(getApplicationContext()).load(uri.toString()).into(headerImage);
+        }
 
         setTitle("Home");
         dashboard dash = new dashboard();
@@ -118,10 +122,7 @@ public class profile_view extends AppCompatActivity implements NavigationView.On
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
         if(id == R.id.action_add){
-            setTitle("New Blog");
-            AddBlog addBlog = new AddBlog();
-            FragmentManager manager = getSupportFragmentManager();
-            manager.beginTransaction().replace(R.id.fragment, addBlog, addBlog.getTag()).commit();
+            startActivity(new Intent(profile_view.this, NewBlog.class));
         }
 
         return super.onOptionsItemSelected(item);
@@ -190,10 +191,20 @@ public class profile_view extends AppCompatActivity implements NavigationView.On
         }
         else if(id == R.id.nav_logout)
         {
-            FirebaseAuth.getInstance().signOut();
-            Toast.makeText(this, "Successfully logged out", Toast.LENGTH_SHORT).show();
-            finish();
-            startActivity(new Intent(profile_view.this, login_page.class));
+            new AlertDialog.Builder(profile_view.this)
+                    .setMessage("Sure you want to logout?")
+                    .setPositiveButton("Logout", (dialog, which) -> {
+                        FirebaseAuth.getInstance().signOut();
+                        Toast.makeText(this, "Successfully logged out", Toast.LENGTH_SHORT).show();
+                        startActivity(new Intent(profile_view.this, login_page.class));
+                        finish();
+                    })
+                    .setNegativeButton(android.R.string.no, (dialog, which) -> {
+                        navigationView.getMenu().findItem(R.id.nav_home).setChecked(true);
+                        navigationView.getMenu().findItem(R.id.nav_logout).setChecked(false);
+                    })
+                    .setIcon(android.R.drawable.ic_dialog_alert)
+                    .show();
         }
         navigationView.setCheckedItem(id);
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);

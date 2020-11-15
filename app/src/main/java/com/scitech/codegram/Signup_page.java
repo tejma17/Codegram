@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -29,6 +30,8 @@ public class Signup_page extends AppCompatActivity {
 
     FirebaseAuth firebaseAuth;
     TextInputLayout rpass, rcpass, remail;
+    ImageView logo;
+    TextView action;
     MaterialButton register;
     TextView loginLink;
     ProgressDialog progressDialog;
@@ -39,12 +42,13 @@ public class Signup_page extends AppCompatActivity {
         setContentView(R.layout.activity_signup_page);
 
         loginLink = (TextView)findViewById(R.id.login_link);
+        action = findViewById(R.id.action);
+        logo = findViewById(R.id.logo);
 
         loginLink.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                startActivity(new Intent(Signup_page.this, login_page.class));
-                finish();
+                onBackPressed();
             }
         });
         progressDialog = new ProgressDialog(this);
@@ -102,18 +106,18 @@ public class Signup_page extends AppCompatActivity {
                               reqDatabase.child(user.getUid()).setValue(new Follow_Request(list));
                           }
                           else {
-                              Toast.makeText(Signup_page.this, "trip", Toast.LENGTH_SHORT).show();
+                              Toast.makeText(Signup_page.this, "Trip", Toast.LENGTH_SHORT).show();
                           }
 
                           Toast.makeText(Signup_page.this, "Registration Successful !!!", Toast.LENGTH_SHORT).show();
-                          progressDialog.hide();
+                          progressDialog.cancel();
                           startActivity(new Intent(Signup_page.this, edit_profile.class).putExtra("Intent","Signup"));
                           finish();
                       }
                       else {
                           FirebaseAuthException e = (FirebaseAuthException)task.getException();
                           Toast.makeText(Signup_page.this, "Registration Failed !!! " + e.getMessage(), Toast.LENGTH_SHORT).show();
-                          progressDialog.hide();
+                          progressDialog.cancel();
                       }
                  }
              });

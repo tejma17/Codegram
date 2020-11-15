@@ -2,6 +2,7 @@ package com.scitech.codegram;
 
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
@@ -77,12 +78,12 @@ public class edit_profile extends AppCompatActivity {
         codechef_user = (EditText)findViewById(R.id.codechef_user);
         hackerearth_user = (EditText)findViewById(R.id.hackerearth_user);
 
-        databaseReference = FirebaseDatabase.getInstance().getReference("CodeStalk_users");
+        databaseReference = FirebaseDatabase.getInstance().getReference("Codegram_Users");
 
         hackerrank.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                if(isChecked != true)
+                if(!isChecked)
                     hackerrank_user.setVisibility(View.GONE);
                 else
                     hackerrank_user.setVisibility(View.VISIBLE);
@@ -91,7 +92,7 @@ public class edit_profile extends AppCompatActivity {
         codechef.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                if(isChecked != true)
+                if(!isChecked)
                     codechef_user.setVisibility(View.GONE);
                 else
                     codechef_user.setVisibility(View.VISIBLE);
@@ -100,7 +101,7 @@ public class edit_profile extends AppCompatActivity {
         hackerearth.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                if(isChecked != true)
+                if(!isChecked)
                     hackerearth_user.setVisibility(View.GONE);
                 else
                     hackerearth_user.setVisibility(View.VISIBLE);
@@ -159,6 +160,7 @@ public class edit_profile extends AppCompatActivity {
 
                 }
             });
+
             if (user.getPhotoUrl() != null) {
                 Glide.with(this)
                         .load(user.getPhotoUrl().toString())
@@ -171,7 +173,9 @@ public class edit_profile extends AppCompatActivity {
 
             if (user.isEmailVerified()) {
                 textView.setText("Email Verified");
+                textView.setTextColor(Color.GREEN);
             } else {
+                textView.setTextColor(Color.RED);
                 textView.setText("Email Not Verified (Click to Verify)");
                 textView.setOnClickListener(new View.OnClickListener() {
                     @Override
@@ -179,7 +183,9 @@ public class edit_profile extends AppCompatActivity {
                         user.sendEmailVerification().addOnCompleteListener(new OnCompleteListener<Void>() {
                             @Override
                             public void onComplete(@NonNull Task<Void> task) {
-                                Toast.makeText(edit_profile.this, "Verification Email Sent", Toast.LENGTH_SHORT).show();
+                                textView.setTextColor(Color.BLUE);
+                                textView.setText("Verification Email Sent");
+                                //Toast.makeText(edit_profile.this, "Verification Email Sent", Toast.LENGTH_SHORT).show();
                             }
                         });
                     }
@@ -222,51 +228,46 @@ public class edit_profile extends AppCompatActivity {
        // Toast.makeText(getApplicationContext(), picUrl, Toast.LENGTH_SHORT).show();
         String uid = user.getUid();
         String emailId = user.getEmail();
-
-        Codegram_user newUser = new Codegram_user(uid, emailId, displayName, displayMobile, displayStatus,
-                picUrl, hackerrankUser, codechefUser, hackerearthUser);
-
-
         //Toast.makeText(edit_profile.this,"Added", Toast.LENGTH_SHORT).show();
 
         String way = getIntent().getStringExtra("Intent");
-        if (user != null && profileImageUrl != null) {
-
-            databaseReference.child(uid).setValue(newUser);
-
-            UserProfileChangeRequest profile = new UserProfileChangeRequest.Builder()
-                    .setDisplayName(displayName)
-                    .setPhotoUri(Uri.parse(profileImageUrl))
-                    .build();
-            user.updateProfile(profile)
-                    .addOnCompleteListener(new OnCompleteListener<Void>() {
-                        @Override
-                        public void onComplete(@NonNull Task<Void> task) {
-                            if (task.isSuccessful()) {
-                                Toast.makeText(edit_profile.this, "Profile Updated", Toast.LENGTH_SHORT).show();
-                                if (!way.equals("Profile")) {
-                                    startActivity(new Intent(edit_profile.this, profile_view.class));
-                                }
-                                finish();
-
-                            }
-                            else{
-                                Toast.makeText(edit_profile.this, "Profile Update Failed !!! " + task.getException().getMessage(), Toast.LENGTH_SHORT).show();
-                            }
-                        }
-                    });
-        }
-        else {
-            newUser.picUrl = user.getPhotoUrl().toString();
-            //Toast.makeText(getApplicationContext(), newUser.getPicUrl(), Toast.LENGTH_SHORT).show();
-            databaseReference.child(uid).setValue(newUser);
-
-            Toast.makeText(edit_profile.this, "Profile Updated", Toast.LENGTH_SHORT).show();
-            if (!way.equals("Profile")) {
-                startActivity(new Intent(edit_profile.this, profile_view.class));
+        if (profileImageUrl == null) {
+            if(user.getPhotoUrl() != null) {
+                profileImageUrl = user.getPhotoUrl().toString();
+            }else{
+                profileImageUrl = "https://firebasestorage.googleapis.com/v0/b/codestalk-new.appspot.com/o/logo.png?alt=media&token=c0975655-3360-4495-bc01-7770039110e1";
             }
-            finish();
+            //Toast.makeText(getApplicationContext(), newUser.getPicUrl(), Toast.LENGTH_SHORT).show();
+            //Toast.makeText(edit_profile.this, "Profile Updated", Toast.LENGTH_SHORT).show();
         }
+
+        UserProfileChangeRequest profile = new UserProfileChangeRequest.Builder()
+                .setDisplayName(displayName)
+                .setPhotoUri(Uri.parse(profileImageUrl))
+                .build();
+
+        Codegram_user newUser = new Codegram_user(uid, emailId, displayName, displayMobile, displayStatus,
+                profileImageUrl, hackerrankUser, codechefUser, hackerearthUser);
+
+        databaseReference.child(uid).setValue(newUser);
+
+        user.updateProfile(profile)
+                .addOnCompleteListener(new OnCompleteListener<Void>() {
+                    @Override
+                    public void onComplete(@NonNull Task<Void> task) {
+                        if (task.isSuccessful()) {
+                            Toast.makeText(edit_profile.this, "Profile Updated", Toast.LENGTH_SHORT).show();
+                            if (!way.equals("Profile")) {
+                                startActivity(new Intent(edit_profile.this, profile_view.class));
+                            }
+                            finish();
+                        }
+                        else{
+                            Toast.makeText(edit_profile.this, "Profile Update Failed !!! " + task.getException().getMessage(), Toast.LENGTH_SHORT).show();
+                        }
+                    }
+                });
+
     }
 
     @Override

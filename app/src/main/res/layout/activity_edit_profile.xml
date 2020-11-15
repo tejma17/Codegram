@@ -177,6 +177,7 @@
         android:layout_height="wrap_content"
         android:layout_marginVertical="20dp"
         android:text="Verified"
+        android:textSize="18sp"
         android:gravity="center"
         android:fontFamily="@font/allerta"
         android:textAppearance="@style/Base.TextAppearance.AppCompat.Large" />

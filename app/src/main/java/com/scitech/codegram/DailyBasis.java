@@ -120,7 +120,7 @@ public class DailyBasis extends Fragment {
         });
     }
 
-    private DatePickerDialog.OnDateSetListener dpickerListener=new DatePickerDialog.OnDateSetListener() {
+    private final DatePickerDialog.OnDateSetListener dpickerListener=new DatePickerDialog.OnDateSetListener() {
         @Override
         public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
             year_x=year;
@@ -129,12 +129,12 @@ public class DailyBasis extends Fragment {
 
             String x,y;
             if(date_x < 10)
-                x = "0" + String.valueOf(date_x);
+                x = "0" + date_x;
             else
                 x = String.valueOf(date_x);
 
             if(month_x < 10)
-                y = "0" + String.valueOf(month_x);
+                y = "0" + month_x;
             else
                 y = String.valueOf(month_x);
 

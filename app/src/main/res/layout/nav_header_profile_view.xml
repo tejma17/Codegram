@@ -16,7 +16,7 @@
         android:id="@+id/nav_profilePic"
         android:layout_width="80dp"
         android:layout_height="80dp"
-        android:src="@drawable/app_logo"
+        android:src="@mipmap/logo"
         app:civ_border="false"
         app:civ_shadow="false" />
 
