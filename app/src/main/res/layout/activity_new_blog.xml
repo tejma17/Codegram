@@ -1,13 +1,22 @@
 <ScrollView android:layout_height="match_parent"
     android:layout_width="match_parent"
-    xmlns:android="http://schemas.android.com/apk/res/android">
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
     <RelativeLayout
-        android:layout_marginTop="?actionBarSize"
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
+        <androidx.appcompat.widget.Toolbar
+            android:id="@+id/toolbar2"
+            android:layout_width="match_parent"
+            android:background="@drawable/luke2"
+            android:theme="@style/Theme.MyFancyTheme"
+            app:titleTextColor="@color/white"
+            app:titleTextAppearance="@style/TextAppearance.TabsFont"
+            android:layout_height="?attr/actionBarSize" />
 
         <ImageView
+            android:layout_marginTop="?attr/actionBarSize"
             android:id="@+id/imageSelect"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -38,6 +47,7 @@
             android:layout_marginLeft="20dp"
             android:inputType="textMultiLine"
             android:maxLines="2"
+            android:transitionName="newblog"
             android:fontFamily="@font/amaranth"
             android:textColorHint="@color/text_hint"
             android:layout_marginRight="20dp"

@@ -1,5 +1,8 @@
 package com.scitech.codegram;
 
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 
 import android.app.ProgressDialog;
 import android.content.Intent;
@@ -7,19 +10,13 @@ import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
-import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.Toast;
-
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
 
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -33,16 +30,7 @@ import com.google.firebase.storage.UploadTask;
 
 import java.io.IOException;
 
-
-/**
- * A simple {@link Fragment} subclass.
- */
-public class AddBlog extends Fragment {
-
-
-    public AddBlog() {
-        // Required empty public constructor
-    }
+public class NewBlog extends AppCompatActivity {
 
     private static final int CHOOSE_IMAGE = 101;
 
@@ -55,24 +43,21 @@ public class AddBlog extends Fragment {
     ProgressBar progressBar;
     String blogImageUrl;
 
-
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
-        setHasOptionsMenu(true);
-        return inflater.inflate(R.layout.fragment_add_blog, container, false);
-    }
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_new_blog);
 
-    @Override
-    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
-        super.onActivityCreated(savedInstanceState);
+        Toolbar toolbar = findViewById(R.id.toolbar2);
+        setSupportActionBar(toolbar);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setTitle("New Blog");
 
-        title = (EditText)getView().findViewById(R.id.addTitle);
-        description = (EditText)getView().findViewById(R.id.addDescription);
-        blogSubmit = (Button)getView().findViewById(R.id.blogSubmit);
-        blogImage = (ImageView)getView().findViewById(R.id.imageSelect);
-        progressBar = (ProgressBar)getView().findViewById(R.id.blogProgressbar);
+        title = (EditText)findViewById(R.id.addTitle);
+        description = (EditText)findViewById(R.id.addDescription);
+        blogSubmit = (Button)findViewById(R.id.blogSubmit);
+        blogImage = (ImageView)findViewById(R.id.imageSelect);
+        progressBar = (ProgressBar)findViewById(R.id.blogProgressbar);
 
         blogImage.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -88,6 +73,7 @@ public class AddBlog extends Fragment {
             }
         });
     }
+
 
     public void saveBlogInformation()
     {
@@ -106,7 +92,7 @@ public class AddBlog extends Fragment {
             return;
         }
         else if(blogImageUrl==null || blogImageUrl.isEmpty()){
-            Toast.makeText(getContext(), "Blog Image required...", Toast.LENGTH_SHORT).show();
+            Toast.makeText(getApplicationContext(), "Blog Image required...", Toast.LENGTH_SHORT).show();
             blogImage.requestFocus();
             return;
         }
@@ -121,13 +107,11 @@ public class AddBlog extends Fragment {
             String blogKey = forumDatabase.push().getKey();
             Blog blog = new Blog(blogKey, blogTitle, blogDescription, user.getDisplayName(), blogImageUrl, likes);
             forumDatabase.child(blogKey).setValue(blog);
-            Toast.makeText(getContext(), "Blog added to TechForum Successfuly...", Toast.LENGTH_SHORT).show();
-            TechForum techForum = new TechForum();
-            FragmentManager manager = getActivity().getSupportFragmentManager();
-            manager.beginTransaction().replace(R.id.fragment, techForum, techForum.getTag()).commit();
+            Toast.makeText(getApplicationContext(), "Blog added to TechForum Successfully...", Toast.LENGTH_SHORT).show();
+            finish();
         }
         else{
-            Toast.makeText(getContext(), "Some Error Occurred!!! Try again...", Toast.LENGTH_SHORT).show();
+            Toast.makeText(getApplicationContext(), "Some Error Occurred!!! Try again...", Toast.LENGTH_SHORT).show();
         }
 
     }
@@ -143,11 +127,11 @@ public class AddBlog extends Fragment {
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
-        if (requestCode == CHOOSE_IMAGE && resultCode == getActivity().RESULT_OK && data != null && data.getData() != null) {
+        if (requestCode == CHOOSE_IMAGE && resultCode == RESULT_OK && data != null && data.getData() != null) {
             uriBlogImage = data.getData();
 
             try {
-                Bitmap bitmap = MediaStore.Images.Media.getBitmap(getActivity().getContentResolver(), uriBlogImage);
+                Bitmap bitmap = MediaStore.Images.Media.getBitmap(getContentResolver(), uriBlogImage);
                 blogImage.setImageBitmap(bitmap);
 
                 uploadImageToFirebaseStorage();
@@ -181,10 +165,18 @@ public class AddBlog extends Fragment {
                         @Override
                         public void onFailure(@NonNull Exception e) {
                             progressBar.setVisibility(View.GONE);
-                            Toast.makeText(getContext(), e.getMessage(), Toast.LENGTH_SHORT).show();
+                            Toast.makeText(getApplicationContext(), e.getMessage(), Toast.LENGTH_SHORT).show();
                         }
                     });
         }
     }
 
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if (item.getItemId() == android.R.id.home) {
+            onBackPressed();
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
+    }
 }
